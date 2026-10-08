@@ -13,7 +13,7 @@ const SORT_LABELS = {
   PRICE_DESC: 'Price: High to Low',
   CREATED: 'Created',
   CREATED_DESC: 'Created Desc',
-  RELEVANCE: 'Most Relevant',
+  MOST_RELEVANT: 'Most Relevant',
 };
 const FIELD_LABELS = {
   TAG: 'Tag',
@@ -49,6 +49,7 @@ const reverse = (labels, extra = {}) => {
   return m;
 };
 const SORT_REV = reverse(SORT_LABELS, {
+  relevance: 'MOST_RELEVANT',
   alphabetically: 'ALPHA_ASC',
   'alphabetically in descending order': 'ALPHA_DESC',
   'highest price': 'PRICE_DESC',
