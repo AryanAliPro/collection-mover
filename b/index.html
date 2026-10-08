@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="shopify-api-key" content="8a2555083437cd57b646a4f7155d80bb">
+<script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
+<title>Collection Mover</title>
+<style>
+  :root { --bg:#f1f1f1; --card:#fff; --ink:#303030; --mute:#616161; --line:#c9cccf; --brand:#303030; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:900px; margin:0 auto; padding:20px 16px 40px; }
+  h1 { font-size:20px; margin:0 0 16px; }
+  .card { background:var(--card); border-radius:12px; padding:16px; margin-bottom:16px; box-shadow:0 1px 0 rgba(26,26,26,.07), 0 0 0 1px rgba(26,26,26,.06); }
+  .card h2 { font-size:14px; margin:0 0 4px; }
+  .card p { margin:0 0 12px; color:var(--mute); }
+  label { display:block; font-weight:550; margin:12px 0 4px; }
+  select, input[type=file] { width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; font:inherit; background:#fff; }
+  .check { display:flex; gap:8px; align-items:flex-start; font-weight:400; margin-top:12px; }
+  button { background:var(--brand); color:#fff; border:0; border-radius:8px; padding:7px 14px; font:inherit; font-weight:550; cursor:pointer; margin-top:12px; }
+  button:disabled { opacity:.5; cursor:wait; }
+  pre { background:#1a1a1a; color:#e3e3e3; border-radius:8px; padding:12px; max-height:320px; overflow:auto; font-size:12px; white-space:pre-wrap; margin:12px 0 0; display:none; }
+  details p { margin:8px 0 0; }
+  summary { cursor:pointer; font-weight:550; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Collection Mover</h1>
+  <div class="card" id="warn" style="display:none;background:#fff5ea"><b>Open this app from your Shopify admin</b> (Apps &rarr; Collection Mover). It only works embedded in a store.</div>
+
+  <section class="card" id="export">
+    <h2>Export</h2>
+    <p>Download every collection from this store (<b id="shop">this store</b>) as an Excel file.</p>
+    <button data-go>Export all collections</button>
+    <pre data-log></pre>
+  </section>
+
+  <section class="card" id="import">
+    <h2>Import</h2>
+    <p>Upload an exported file to create the collections in this store. Import your products first, so manual collections can find them.</p>
+    <label for="file">Excel file (.xlsx)</label>
+    <input type="file" id="file" accept=".xlsx">
+    <label for="existing">If a collection with the same handle already exists</label>
+    <select id="existing"><option value="skip">Skip it</option><option value="update">Update it</option></select>
+    <label class="check"><input type="checkbox" id="publish"> Publish everything to the Online Store (otherwise follow the "Published:" columns in the file)</label>
+    <button data-go>Import collections</button>
+    <pre data-log></pre>
+  </section>
+
+  <details class="card">
+    <summary>What gets copied</summary>
+    <p><b>Copied:</b> title, handle, description, image, SEO, sort order, theme template, metafields, sales-channel publishing, smart-collection conditions, and for manual collections the product list (matched by product handle). The file uses the same layout as a Matrixify collections export, so Matrixify files can be imported too.</p>
+    <p><b>Not copied:</b> conditions that depend on a metafield definition, and products missing from this store (reported in the log).</p>
+  </details>
+</main>
+
+<script src="../xlsx.js"></script>
+<script src="../convert.js"></script>
+<script src="../app.js"></script>
+</body>
+</html>
