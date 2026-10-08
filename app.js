@@ -7,15 +7,17 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function makeClient() {
   async function gql(query, variables = {}) {
     for (let attempt = 0; attempt < 6; attempt++) {
-      let r;
-      try {
-        r = await fetch(`shopify:admin/api/${API_VERSION}/graphql.json`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query, variables }),
-        });
-      } catch (e) {
-        throw new Error(`Could not call the Shopify Admin API (${e.message}). Open this app from the Shopify admin (Apps > Collection Mover) and make sure Direct API access is enabled; see the README.`);
+      let r, lastErr;
+      // Direct API access: App Bridge rewrites the shopify: URL. Send no custom headers (a Content-Type
+      // header can trigger a failing cross-origin preflight). Try the versioned URL, then the unversioned one.
+      for (const u of [`shopify:admin/api/${API_VERSION}/graphql.json`, 'shopify:admin/api/graphql.json']) {
+        try {
+          r = await fetch(u, { method: 'POST', body: JSON.stringify({ query, variables }) });
+          break;
+        } catch (e) { lastErr = e; }
+      }
+      if (!r) {
+        throw new Error(`Could not call the Shopify Admin API (${lastErr?.name}: ${lastErr?.message}). App Bridge loaded: ${typeof shopify !== 'undefined'}. Try disabling ad-blocker/privacy extensions for admin.shopify.com, then reload the app.`);
       }
       if (r.status === 429 || r.status >= 500) { await sleep(1000 * (attempt + 1)); continue; }
       if (r.status === 401 || r.status === 403) throw new Error(`Access denied (${r.status}). Reinstall the app and make sure it has the product and publication scopes.`);
